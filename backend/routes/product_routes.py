@@ -2,6 +2,7 @@ from fastapi import APIRouter, UploadFile, HTTPException, File, Form
 from database import products_collection
 import shutil
 import os
+import qrcode
 import uuid
 
 router = APIRouter()
@@ -13,7 +14,7 @@ if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
 
-# ➕ Add Product
+# ➕ Add Product (Image + QR)
 @router.post("/add-product")
 def add_product(
     product_id: str = Form(...),
@@ -26,10 +27,9 @@ def add_product(
     if existing:
         raise HTTPException(status_code=400, detail="Product already exists")
 
+    # 🖼️ Image Upload
     image_url = None
-
     if image:
-        # ✅ unique filename (important)
         filename = f"{uuid.uuid4()}_{image.filename}"
         file_path = os.path.join(UPLOAD_DIR, filename)
 
@@ -38,35 +38,43 @@ def add_product(
 
         image_url = f"http://127.0.0.1:8000/uploads/{filename}"
 
+    # 🔳 QR Code (ONLY product_id)
+    qr_filename = f"qr_{product_id}.png"
+    qr_path = os.path.join(UPLOAD_DIR, qr_filename)
+
+    qr = qrcode.make(product_id)  # ✅ ONLY product_id
+    qr.save(qr_path)
+
+    qr_url = f"http://127.0.0.1:8000/uploads/{qr_filename}"
+
+    # 📦 Product Data
     product = {
         "product_id": product_id,
         "name": name,
         "price": price,
         "availability": availability,
-        "image_url": image_url
+        "image_url": image_url,
+        "qr_code_url": qr_url
     }
 
+    # ✅ Avoid Mongo _id issue
     product_copy = product.copy()
 
     products_collection.insert_one(product)
-    
-    def clean_doc(doc):
-        doc.pop("_id", None)
-        return doc
 
     return {
         "message": "Product added",
-        "product": clean_doc(product_copy)
+        "product": product_copy
     }
 
 
-# 📋 Get all products
+# 📋 Get All Products
 @router.get("/products")
 def get_products():
     return list(products_collection.find({}, {"_id": 0}))
 
 
-# ❌ Delete product
+# ❌ Delete Product
 @router.delete("/delete-product/{product_id}")
 def delete_product(product_id: str):
     result = products_collection.delete_one({"product_id": product_id})
@@ -77,7 +85,7 @@ def delete_product(product_id: str):
     return {"message": "Product deleted successfully"}
 
 
-# ✏️ Rename product
+# ✏️ Rename Product
 @router.put("/rename-product/{product_id}")
 def rename_product(product_id: str, data: dict):
     new_name = data.get("name")
@@ -96,7 +104,7 @@ def rename_product(product_id: str, data: dict):
     return {"message": "Product renamed successfully"}
 
 
-# 💰 Update price
+# 💰 Update Price
 @router.put("/update-price/{product_id}")
 def update_price(product_id: str, data: dict):
     new_price = data.get("price")

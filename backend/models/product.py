@@ -7,3 +7,4 @@ class Product(BaseModel):
     price: float
     availability: bool = True   
     image_url: Optional[str] = None  
+    qr_code_url: Optional[str] = None
