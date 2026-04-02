@@ -2,10 +2,18 @@ import os
 from fastapi import FastAPI
 from routes import cart_routes, product_routes, payment_routes, auth_routes
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# Create uploads folder if not exists
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 if not os.path.exists("uploads"):
     os.makedirs("uploads")
 

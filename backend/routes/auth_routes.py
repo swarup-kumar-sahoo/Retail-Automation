@@ -21,7 +21,6 @@ def signup(user: User):
     return {"message": "User created successfully"}
 
 
-# 🔐 Login
 @router.post("/login")
 def login(user: dict):
     db_user = users_collection.find_one({"email": user["email"]})
