@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://retail-automation-five.vercel.app/api",
+  baseURL: "https://retail-automation.onrender.com/api",
 });
 
 // attach token
