@@ -21,7 +21,7 @@ export default function Admin() {
 
   const [editMode, setEditMode] = useState(null);
   const [editValue, setEditValue] = useState("");
-  const [editField, setEditField] = useState(null); // 'name' | 'price'
+  const [editField, setEditField] = useState(null); 
   const [isLoading, setIsLoading] = useState(false);
   const [notification, setNotification] = useState(null);
 
