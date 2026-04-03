@@ -9,9 +9,5 @@
       "entrypoint": "backend",
       "routePrefix": "/_/backend"
     }
-  },
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/" }
-  ]
+  }
 }
