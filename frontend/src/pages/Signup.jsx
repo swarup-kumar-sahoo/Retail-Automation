@@ -34,6 +34,7 @@ export default function Signup() {
       nav("/");
     } catch (err) {
       setError(err?.response?.data?.message || "Signup failed. Please try again.");
+      console.log(err.response || err);
     } finally {
       setLoading(false);
     }
