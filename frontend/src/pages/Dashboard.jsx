@@ -55,21 +55,30 @@ export default function Dashboard() {
   const startScanner = async () => {
     try {
       scannerRef.current = new Html5Qrcode("reader");
+
       await scannerRef.current.start(
         { facingMode: "environment" },
         { fps: 10, qrbox: 250 },
         async (decodedText) => {
           try {
+            // 🛑 STOP immediately after first scan
+            await scannerRef.current.stop();
+            setScannerRunning(false);
+
+            // Call API
             await API.post(`/scan/${decodedText}`);
+
             setLastScanned(decodedText);
             setScanFlash(true);
             setTimeout(() => setScanFlash(false), 800);
+
             fetchCart();
           } catch (err) {
             console.error("Scan API error", err);
           }
         }
       );
+
       setScannerRunning(true);
     } catch (err) {
       console.error("Scanner start error", err);
