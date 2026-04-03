@@ -36,16 +36,16 @@ def add_product(
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(image.file, buffer)
 
-        image_url = f"http://127.0.0.1:8000/uploads/{filename}"
+        image_url = f"https://retail-automation.onrender.com/uploads/{filename}"
 
     # 🔳 QR Code (ONLY product_id)
     qr_filename = f"qr_{product_id}.png"
     qr_path = os.path.join(UPLOAD_DIR, qr_filename)
 
-    qr = qrcode.make(product_id)  # ✅ ONLY product_id
+    qr = qrcode.make(product_id)  
     qr.save(qr_path)
 
-    qr_url = f"http://127.0.0.1:8000/uploads/{qr_filename}"
+    qr_url = f"https://retail-automation.onrender.com/uploads/{qr_filename}"
 
     # 📦 Product Data
     product = {
